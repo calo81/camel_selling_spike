@@ -3,7 +3,7 @@ camel_selling_spike
 The spike is to use like:
 
 With a Mysql Database named simplybusiness_example that looks like:
-
+```
 mysql> select * from policies;
 +------+---------+-----------+
 | id   | person  | processed |
@@ -13,7 +13,7 @@ mysql> select * from policies;
 |    2 | riggs   |         1 |
 |    3 | matrix  |         1 |
 +------+---------+-----------+
-
+```
 and has user: admin password admin
 
 And a rabbit_mq running.
