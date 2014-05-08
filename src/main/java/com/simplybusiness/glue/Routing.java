@@ -26,6 +26,6 @@ public class Routing extends RouteBuilder{
         from("rabbitmq://localhost/sold_policies_exchange?durable=true&queue=sold_policies_queue&username=guest&password=guest&exchangeType=topic&autoDelete=false").
                 wireTap("file:/tmp/policy_solds").
                 multicast().
-                 to("file:/tmp/foo", "smtps://smtp.gmail.com?username=carlo.scarioni@gmail.com&password=16341731c&to=carlo.scarioni@gmail.com&subject=PolicySold");
+                 to("file:/tmp/foo", "smtps://smtp.gmail.com?username=carlo.scarioni@gmail.com&password=xxxxx&to=carlo.scarioni@gmail.com&subject=PolicySold");
     }
 }
