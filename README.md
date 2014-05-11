@@ -24,7 +24,7 @@ And the SMTP mail configured correctly.
 
 To test one of the ways go to the queue `chopin_development_queue` and publish a message as a `json` looking like `{"name":"policy.sold", "person":"joe", "id":5, "amount":43}`
 
-To test with the sql, insert a row like: `insert into policies values(4, "sdvsdv", false);`
+To test with the sql, insert a row like: `insert into policies values(16, "carlo", false, 245);`
 
 This both cases will handle (or create) a new sold event and log it and then broadcast it.
 
@@ -34,6 +34,12 @@ Using the remote mysql:
 mysql -h 178.79.182.165 -u admin -p
 ```
 password admin
+
+then:
+
+```
+use simplybusiness_example
+```
 
 
 Using the remote Rabbit:
