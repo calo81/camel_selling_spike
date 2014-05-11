@@ -1,7 +1,10 @@
 package com.simplybusiness.glue;
 
 import org.apache.camel.builder.RouteBuilder;
+import org.apache.camel.model.dataformat.JsonLibrary;
 import org.codehaus.jettison.json.JSONObject;
+
+import java.util.Map;
 
 /**
  * Created with IntelliJ IDEA.
@@ -13,19 +16,22 @@ import org.codehaus.jettison.json.JSONObject;
 public class Routing extends RouteBuilder{
     @Override
     public void configure() throws Exception {
-        from("sql:select id, person from policies where processed=false?dataSource=dataSource&?consumer.onConsume=update policies set processed=true where id = :#id").
-                convertBodyTo(String.class).
+        from("sql:select id, person, amount from policies where processed=false?dataSource=dataSource&?consumer.onConsume=update policies set processed=true where id = :#id").
+                marshal().json(JsonLibrary.Gson, Map.class).
+                //convertBodyTo(String.class).
                 to("rabbitmq://localhost/sold_policies_exchange?durable=true&queue=sold_policies_queue&username=guest&password=guest&exchangeType=topic&autoDelete=false");
 
         from("rabbitmq://localhost/chopin_development_exchange?durable=true&queue=chopin_development_queue&username=guest&password=guest&exchangeType=topic&autoDelete=false").
                 setHeader("messageName").jsonpath("$['name']").
                 choice().
                   when(header("messageName").isEqualTo("policy.sold")).
-                    multicast().to("rabbitmq://localhost/sold_policies_exchange?durable=true&queue=sold_policies_queue&username=guest&password=guest&exchangeType=topic&autoDelete=false");
+                    to("rabbitmq://localhost/sold_policies_exchange?durable=true&queue=sold_policies_queue&username=guest&password=guest&exchangeType=topic&autoDelete=false");
 
         from("rabbitmq://localhost/sold_policies_exchange?durable=true&queue=sold_policies_queue&username=guest&password=guest&exchangeType=topic&autoDelete=false").
                 wireTap("file:/tmp/policy_solds").
                 multicast().
-                 to("file:/tmp/foo", "smtps://smtp.gmail.com?username=carlo.scarioni@gmail.com&password=xxxxx&to=carlo.scarioni@gmail.com&subject=PolicySold");
+                 to("file:/tmp/foo",
+                         //"smtps://smtp.gmail.com?username=carlo.scarioni@gmail.com&password=xxxxx&to=carlo.scarioni@gmail.com&subject=PolicySold",
+                         "http:localhost:3001/sale");
     }
 }
