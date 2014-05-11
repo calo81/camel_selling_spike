@@ -5,14 +5,14 @@ The spike is to use like:
 With a Mysql Database named simplybusiness_example that looks like:
 ```
 mysql> select * from policies;
-+------+---------+-----------+
-| id   | person  | processed |
-+------+---------+-----------+
-|    1 | geppeo  |         1 |
-|    1 | mcclane |         1 |
-|    2 | riggs   |         1 |
-|    3 | matrix  |         1 |
-+------+---------+-----------+
++------+--------------+-----------+--------+
+| id   | person       | processed | amount |
++------+--------------+-----------+--------+
+|    8 | jkbkbsdkfbv  |         1 |    123 |
+|    8 | jkbkbsdkfbv  |         1 |    123 |
+|    9 | jkbkbsdkfbv  |         1 |    123 |
+|    9 | jkbkbsdkfbv  |         1 |    123 |
+|    9 | jkbkbsdkfbv  |         1 |    123 |
 ```
 and has user: admin password admin
 
@@ -22,7 +22,7 @@ With an exchange named `sold_policies_exchange` other named `chopin_development_
 
 And the SMTP mail configured correctly.
 
-To test one of the ways go to the queue `chopin_development_queue` and publish a message as a `json` looking like `{"name":"policy.sold", "id":"1","person":"joe"}`
+To test one of the ways go to the queue `chopin_development_queue` and publish a message as a `json` looking like `{"name":"policy.sold", "person":"joe", "id":5, "amount":43}`
 
 To test with the sql, insert a row like: `insert into policies values(4, "sdvsdv", false);`
 
