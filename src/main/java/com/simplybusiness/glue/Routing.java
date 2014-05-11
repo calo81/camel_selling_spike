@@ -18,7 +18,7 @@ public class Routing extends RouteBuilder{
     public void configure() throws Exception {
         from("sql:select id, person, amount from policies where processed=false?dataSource=dataSource&?consumer.onConsume=update policies set processed=true where id = :#id").
                 marshal().json(JsonLibrary.Gson, Map.class).
-                to("direct:sold");
+                to("rabbitmq://localhost/sold_policies_exchange?username=guest&password=guest");
 
         from("rabbitmq://localhost/chopin_development_exchange?durable=true&queue=chopin_development_queue&username=guest&password=guest&exchangeType=topic&autoDelete=false").
                 setHeader("messageName").jsonpath("$['name']").
