@@ -24,8 +24,6 @@ public class Routing extends RouteBuilder{
                 setHeader("messageName").jsonpath("$['name']").
                 choice().
                   when(header("messageName").isEqualTo("policy.sold")).
-                    convertBodyTo(String.class).
-                    marshal().json(JsonLibrary.Gson, String.class).
                     to("direct:sold");
 
         from("direct:sold").
