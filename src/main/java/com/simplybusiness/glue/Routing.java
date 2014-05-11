@@ -18,14 +18,19 @@ public class Routing extends RouteBuilder{
     public void configure() throws Exception {
         from("sql:select id, person, amount from policies where processed=false?dataSource=dataSource&?consumer.onConsume=update policies set processed=true where id = :#id").
                 marshal().json(JsonLibrary.Gson, Map.class).
-                //convertBodyTo(String.class).
-                to("rabbitmq://localhost/sold_policies_exchange?durable=true&queue=sold_policies_queue&username=guest&password=guest&exchangeType=topic&autoDelete=false");
+                to("direct:sold");
 
         from("rabbitmq://localhost/chopin_development_exchange?durable=true&queue=chopin_development_queue&username=guest&password=guest&exchangeType=topic&autoDelete=false").
                 setHeader("messageName").jsonpath("$['name']").
                 choice().
                   when(header("messageName").isEqualTo("policy.sold")).
-                    to("rabbitmq://localhost/sold_policies_exchange?durable=true&queue=sold_policies_queue&username=guest&password=guest&exchangeType=topic&autoDelete=false");
+                    convertBodyTo(String.class).
+                    marshal().json(JsonLibrary.Gson, String.class).
+                    to("direct:sold");
+
+        from("direct:sold").
+                removeHeaders("*").
+                to("rabbitmq://localhost/sold_policies_exchange?username=guest&password=guest");
 
         from("rabbitmq://localhost/sold_policies_exchange?durable=true&queue=sold_policies_queue&username=guest&password=guest&exchangeType=topic&autoDelete=false").
                 wireTap("file:/tmp/policy_solds").
